@@ -2,6 +2,14 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CustomerRestServer.API", "CustomerRestServer.API\CustomerRestServer.API.csproj", "{60732B80-B3BA-481C-B00A-0832E33F7958}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CustomerRestServer.Models", "Common\CustomerRestServer.Models\CustomerRestServer.Models.csproj", "{AFA828FF-43E6-44A1-9035-7A3FA3955AE1}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Common", "Common", "{EF305741-2101-4056-B656-D5D798B30186}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CustomerRestServer.Consumer", "Consumer\CustomerRestServer.Consumer\CustomerRestServer.Consumer.csproj", "{21E7EC81-279B-45FC-B597-7815850DD09C}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Consumer", "Consumer", "{535491B0-16F4-4D26-B0A1-803BC010C0AD}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -12,5 +20,17 @@ Global
 		{60732B80-B3BA-481C-B00A-0832E33F7958}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{60732B80-B3BA-481C-B00A-0832E33F7958}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{60732B80-B3BA-481C-B00A-0832E33F7958}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AFA828FF-43E6-44A1-9035-7A3FA3955AE1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AFA828FF-43E6-44A1-9035-7A3FA3955AE1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AFA828FF-43E6-44A1-9035-7A3FA3955AE1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AFA828FF-43E6-44A1-9035-7A3FA3955AE1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{21E7EC81-279B-45FC-B597-7815850DD09C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{21E7EC81-279B-45FC-B597-7815850DD09C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{21E7EC81-279B-45FC-B597-7815850DD09C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{21E7EC81-279B-45FC-B597-7815850DD09C}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{AFA828FF-43E6-44A1-9035-7A3FA3955AE1} = {EF305741-2101-4056-B656-D5D798B30186}
+		{21E7EC81-279B-45FC-B597-7815850DD09C} = {535491B0-16F4-4D26-B0A1-803BC010C0AD}
 	EndGlobalSection
 EndGlobal
