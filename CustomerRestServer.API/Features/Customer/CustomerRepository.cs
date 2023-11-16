@@ -6,6 +6,11 @@ namespace CustomerRestServer.API.Features.Customer;
 public class CustomerRepository : ICustomerRepository
 {
     private const string STORAGE_FILE_NAME = "customer_storage.json";
+    private readonly JsonSerializerOptions JSON_OPTIONS = new() 
+    {
+        PropertyNameCaseInsensitive = true,
+        WriteIndented = true
+    };
 
     private CustomerModel[]? _storage;
     private readonly object _lock = new();
@@ -40,7 +45,7 @@ public class CustomerRepository : ICustomerRepository
         {
             //It doesn't lock because it is used inside the AddCustomer
             //which is already locking
-            string content = JsonSerializer.Serialize(_storage);
+            string content = JsonSerializer.Serialize(_storage, JSON_OPTIONS);
             File.WriteAllText(STORAGE_FILE_NAME, content);
         }
     }
