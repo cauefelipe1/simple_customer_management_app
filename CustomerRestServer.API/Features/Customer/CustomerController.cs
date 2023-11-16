@@ -28,13 +28,23 @@ public class CustomerController : ControllerBase
     }
 
     [HttpPost]
-    public ActionResult AddCustomer([FromBody] CustomerModel model)
+    public ActionResult AddCustomer([FromBody] CustomerModel[] models)
     {
         if (!ModelState.IsValid)
             return BadRequest();
-        
-        _repo.AddCustomer(model);
 
-        return Ok();
+        foreach (var model in models)
+        {
+            try
+            {
+                _repo.AddCustomer(model);
+            }
+            catch
+            {
+                return BadRequest();
+            }
+        }
+        
+        return NoContent();
     }
 }
