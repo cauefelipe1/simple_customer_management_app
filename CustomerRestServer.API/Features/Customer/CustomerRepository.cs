@@ -61,7 +61,7 @@ public class CustomerRepository : ICustomerRepository
             var customer = _storage!.FirstOrDefault(c => c.Id == model.Id);
 
             if (customer is not null)
-                throw new Exception("Id has been already used.");
+                throw new Exception($"Id {model.Id} has been already used.");
 
             int idx = Array.BinarySearch(_storage!.ToArray(), model);
             idx = ~idx;

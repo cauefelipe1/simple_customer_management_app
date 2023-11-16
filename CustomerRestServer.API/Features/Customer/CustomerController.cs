@@ -39,9 +39,9 @@ public class CustomerController : ControllerBase
             {
                 _repo.AddCustomer(model);
             }
-            catch
+            catch (Exception ex)
             {
-                return BadRequest();
+                return BadRequest(ex.Message);
             }
         }
         
