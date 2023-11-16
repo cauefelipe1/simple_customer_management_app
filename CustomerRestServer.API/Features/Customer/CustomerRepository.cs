@@ -43,7 +43,6 @@ public class CustomerRepository : ICustomerRepository
             string content = JsonSerializer.Serialize(_storage);
             File.WriteAllText(STORAGE_FILE_NAME, content);
         }
-        
     }
 
     public CustomerModel[] GetCustomers()
