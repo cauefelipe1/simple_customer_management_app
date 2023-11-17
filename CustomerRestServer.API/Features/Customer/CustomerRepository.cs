@@ -77,7 +77,9 @@ public class CustomerRepository : ICustomerRepository
                 throw new Exception($"Id {model.Id} has been already used.");
 
             int idx = Array.BinarySearch(_storage!.ToArray(), model);
-            idx = ~idx;
+            
+            if (idx < 0)
+                idx = ~idx;
             
             InsertIntoArray(model, idx);
             
