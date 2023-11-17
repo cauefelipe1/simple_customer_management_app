@@ -13,7 +13,7 @@ public class CustomerRepository : ICustomerRepository
     };
 
     private CustomerModel[]? _storage;
-    private readonly object _lock = new();
+    private readonly ReaderWriterLockSlim _lock = new();
 
     public CustomerRepository()
     {
@@ -24,14 +24,15 @@ public class CustomerRepository : ICustomerRepository
     {
         if (_storage is null)
         {
-            lock (_lock)
+            _lock.EnterWriteLock();
+            try
             {
                 if (File.Exists(STORAGE_FILE_NAME))
                 {
                     string fileContent = File.ReadAllText(STORAGE_FILE_NAME);
 
                     if (!string.IsNullOrEmpty(fileContent))
-                        _storage = JsonSerializer.Deserialize<CustomerModel[]>(fileContent) ?? new CustomerModel[] {};
+                        _storage = JsonSerializer.Deserialize<CustomerModel[]>(fileContent) ?? new CustomerModel[] { };
                     else
                         _storage = new CustomerModel[] { };
                 }
@@ -39,7 +40,11 @@ public class CustomerRepository : ICustomerRepository
                 {
                     _storage = new CustomerModel[] { };
                 }
-            }    
+            }
+            finally
+            {
+                _lock.ExitWriteLock();
+            }
         }
         
     }
@@ -57,19 +62,40 @@ public class CustomerRepository : ICustomerRepository
 
     public uint GetCustomersMaxId()
     {
-        uint id = 0;
-        
-        if (_storage is not null && _storage.Length > 0)
-            id = _storage?.Max(c => c.Id) ?? 0;
+        _lock.EnterReadLock();
+        try
+        {
+            uint id = 0;
 
-        return id;
+            if (_storage is not null && _storage.Length > 0)
+                id = _storage?.Max(c => c.Id) ?? 0;
+
+            return id;
+        }
+        finally
+        {
+            _lock.ExitReadLock();
+        }
+        
     }
 
-    public CustomerModel[] GetCustomers() => _storage ?? new CustomerModel[] {};
+    public CustomerModel[] GetCustomers()
+    {
+        _lock.EnterReadLock();
+        try
+        {
+            return _storage ?? new CustomerModel[] { };
+        }
+        finally
+        {
+            _lock.ExitReadLock();
+        }
+    }
 
     public void AddCustomer(CustomerModel model)
     {
-        lock (_lock)
+        _lock.EnterUpgradeableReadLock();
+        try
         {
             var customer = _storage!.FirstOrDefault(c => c.Id == model.Id);
 
@@ -77,11 +103,25 @@ public class CustomerRepository : ICustomerRepository
                 throw new Exception($"Id {model.Id} has been already used.");
 
             int idx = Array.BinarySearch(_storage!.ToArray(), model);
-            idx = ~idx;
             
-            InsertIntoArray(model, idx);
+            if (idx < 0)
+                idx = ~idx;
+
+            _lock.EnterWriteLock();
+            try
+            {
+                InsertIntoArray(model, idx);
+            }
+            finally
+            {
+                _lock.ExitWriteLock();
+            }
             
             SaveStorage();
+        }
+        finally
+        {
+            _lock.EnterUpgradeableReadLock();
         }
     }
 
