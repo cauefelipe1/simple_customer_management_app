@@ -15,6 +15,11 @@ public class CustomerRepository : ICustomerRepository
     private CustomerModel[]? _storage;
     private readonly object _lock = new();
 
+    public CustomerRepository()
+    {
+        LoadStorage();
+    }
+
     private void LoadStorage()
     {
         if (_storage is null)
@@ -50,17 +55,20 @@ public class CustomerRepository : ICustomerRepository
         }
     }
 
-    public CustomerModel[] GetCustomers()
+    public uint GetCustomersMaxId()
     {
-        LoadStorage();
+        uint id = 0;
         
-        return _storage ?? new CustomerModel[] {};
+        if (_storage is not null && _storage.Length > 0)
+            id = _storage?.Max(c => c.Id) ?? 0;
+
+        return id;
     }
+
+    public CustomerModel[] GetCustomers() => _storage ?? new CustomerModel[] {};
 
     public void AddCustomer(CustomerModel model)
     {
-        LoadStorage();
-
         lock (_lock)
         {
             var customer = _storage!.FirstOrDefault(c => c.Id == model.Id);

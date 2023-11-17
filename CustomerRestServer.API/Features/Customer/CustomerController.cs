@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace CustomerRestServer.API.Features.Customer;
 
 [ApiController]
-[Route("[controller]")]
+[Route("customer")]
 public class CustomerController : ControllerBase
 {
     private readonly ICustomerRepository _repo;
@@ -12,6 +12,14 @@ public class CustomerController : ControllerBase
     public CustomerController(ICustomerRepository repo)
     {
         _repo = repo;
+    }
+    
+    [HttpGet("max-id")]
+    public uint GetCustomerMaxId()
+    {
+        uint id = _repo.GetCustomersMaxId();
+
+        return id;
     }
 
     [HttpGet]

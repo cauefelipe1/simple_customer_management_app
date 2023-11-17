@@ -29,9 +29,9 @@ public class CustomerManagementRestClient
             .Add(new MediaTypeWithQualityHeaderValue("application/json"));
     }
 
-    public async Task Execute(int customersAmount)
+    public async Task<List<CustomerModel>> Execute(int customersAmount)
     {
-        var customers = BuildCustomers(customersAmount);
+        var customers = await BuildCustomers(customersAmount);
         var tasks = new List<Task>();
         
         int i = 0;
@@ -53,12 +53,21 @@ public class CustomerManagementRestClient
         }
 
         await Task.WhenAll(tasks);
+
+        var result = new List<CustomerModel>();
+        foreach (var t in tasks)
+        {
+            if (t is Task<CustomerModel[]> task)
+                result.AddRange(task.Result);
+        }
+
+        return result;
     }
 
-    private List<CustomerModel> BuildCustomers(int amount)
+    private async Task<List<CustomerModel>> BuildCustomers(int amount)
     {
         var result = new List<CustomerModel>();
-        uint currentId = 0;
+        uint currentId = await GetMaxCustomersId();
         
         var random = new Random();
         
@@ -81,7 +90,8 @@ public class CustomerManagementRestClient
     
     private Task CreateCustomers(IEnumerable<CustomerModel> customers)
     {
-        Console.WriteLine($"Sending request to create {customers} customers.");
+        Console.WriteLine($"Sending request to create {customers.Count()} customers.");
+        
         var body = new StringContent(JsonSerializer.Serialize(customers), Encoding.UTF8, "application/json");
         
         return _httpClient.PostAsync("customer", body);
@@ -97,13 +107,32 @@ public class CustomerManagementRestClient
         if (!resp.IsSuccessStatusCode)
             return new CustomerModel[] {};
         
-        string issue = await resp.Content.ReadAsStringAsync();
+        string customers = await resp.Content.ReadAsStringAsync();
 
         var jsonOpt = new JsonSerializerOptions
         {
             PropertyNameCaseInsensitive = true
         };
         
-        return JsonSerializer.Deserialize<CustomerModel[]>(issue, jsonOpt) ?? new CustomerModel[] {};
+        return JsonSerializer.Deserialize<CustomerModel[]>(customers, jsonOpt) ?? new CustomerModel[] {};
+    }
+    
+    private async Task<uint> GetMaxCustomersId()
+    {
+        Console.WriteLine("Retrieving customers");
+
+        var resp = await _httpClient.GetAsync($"customer/max-id");
+
+        if (!resp.IsSuccessStatusCode)
+            return 0;
+        
+        string id = await resp.Content.ReadAsStringAsync();
+
+        var jsonOpt = new JsonSerializerOptions
+        {
+            PropertyNameCaseInsensitive = true
+        };
+        
+        return JsonSerializer.Deserialize<uint>(id, jsonOpt);
     }
 }

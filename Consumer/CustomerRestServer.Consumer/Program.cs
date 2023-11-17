@@ -1,4 +1,6 @@
-﻿namespace CustomerRestServer.Consumer;
+﻿using System.Text.Json;
+
+namespace CustomerRestServer.Consumer;
 
 class Program
 {
@@ -11,6 +13,14 @@ class Program
         
         var exec = new CustomerManagementRestClient();
             
-        await exec.Execute(customersAmount);
+        var customers = await exec.Execute(customersAmount);
+        
+        Console.WriteLine("All customers created:");
+        
+        string serialized = JsonSerializer.Serialize(
+            customers,
+            new JsonSerializerOptions { WriteIndented = true });
+        
+        Console.WriteLine(serialized);
     }
 }
