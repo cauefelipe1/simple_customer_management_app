@@ -52,6 +52,7 @@ public class CustomerManagementRestClient
             i += customersToSend;
         }
 
+        Console.WriteLine("Waiting requests.");
         await Task.WhenAll(tasks);
 
         var result = new List<CustomerModel>();
@@ -95,7 +96,6 @@ public class CustomerManagementRestClient
         var body = new StringContent(JsonSerializer.Serialize(customers), Encoding.UTF8, "application/json");
         
         return _httpClient.PostAsync("customer", body);
-        
     }
     
     private async Task<CustomerModel[]> GetCustomers()
@@ -119,7 +119,7 @@ public class CustomerManagementRestClient
     
     private async Task<uint> GetMaxCustomersId()
     {
-        Console.WriteLine("Retrieving customers");
+        Console.WriteLine("Retrieving customer ID seed.");
 
         var resp = await _httpClient.GetAsync($"customer/max-id");
 
